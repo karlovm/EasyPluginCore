@@ -1,0 +1,8 @@
+name: EasyPluginCore
+version: ${project.version}
+main: ru.etysoft.epcore.EasyPluginCore
+api-version: 1.13
+prefix: EasyPluginCore
+authors: [karlov_m]
+description: Core for plugins for better coding
+website: etysoft.ru

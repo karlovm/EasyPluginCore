@@ -8,6 +8,16 @@ public class SlotRunnable implements Runnable {
 
     }
     private Player sender;
+    private GUITable guiTable;
+
+    public void setGUITable(GUITable guiTable) {
+        this.guiTable = guiTable;
+    }
+
+    public GUITable getGUITable() {
+        return guiTable;
+    }
+
     public void setSender(Player sender)
     {
         this.sender = sender;

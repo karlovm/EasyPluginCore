@@ -6,7 +6,7 @@
 
     <groupId>ru.etysoft.epcore</groupId>
     <artifactId>EasyPluginCore</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <name>EasyPluginCore</name>

@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import ru.etysoft.epcore.EasyPluginCore;
 import ru.etysoft.epcore.TextManager;
 
 import java.util.HashMap;
@@ -25,13 +27,11 @@ public class GUITable implements Listener {
 
     private JavaPlugin instance;
 
+    private boolean closable;
 
-    public static GUITable GUITable(String title, int lines, HashMap<Integer, Slot> matrix, JavaPlugin instance) throws Exception
-    {
-       return new GUITable(title, lines, matrix, instance, Material.GRAY_STAINED_GLASS_PANE);
-    }
 
-    public GUITable(String title, int lines, HashMap<Integer, Slot> matrix, JavaPlugin instance, Material airPlaceholder) throws Exception
+
+    public GUITable(String title, int lines, HashMap<Integer, Slot> matrix, JavaPlugin instance, Material airPlaceholder, boolean closable) throws Exception
     {
         if(lines > 6)
         {
@@ -39,6 +39,7 @@ public class GUITable implements Listener {
         }
         else
         {
+            this.closable = closable;
             this.lines = lines;
             maxSize = lines * 9;
             this.instance = instance;
@@ -48,6 +49,14 @@ public class GUITable implements Listener {
             initializeItems(airPlaceholder);
         }
 
+    }
+
+    public boolean isClosable() {
+        return closable;
+    }
+
+    public void setClosable(boolean closable) {
+        this.closable = closable;
     }
 
     private void initializeItems(Material airPlaceholder) throws Exception {
@@ -74,6 +83,7 @@ public class GUITable implements Listener {
             Slot slot = matrix.get(clickedId + 1);
             SlotRunnable slotRunnable = slot.getOnClick();
             slotRunnable.setSender(p);
+            slotRunnable.setGUITable(this);
             slotRunnable.run();
         }
     }
@@ -82,6 +92,17 @@ public class GUITable implements Listener {
     public void onInvetoryClosed(final InventoryCloseEvent e)
     {
         if (e.getInventory() != inventory) return;
+        if(!isClosable())
+        {
+            Bukkit.getScheduler().runTaskLater(EasyPluginCore.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    open(e.getPlayer());
+                }
+            }, 20);
+            return;
+        }
+
         InventoryCloseEvent.getHandlerList().unregister(this);
         InventoryDragEvent.getHandlerList().unregister(this);
         InventoryClickEvent.getHandlerList().unregister(this);

@@ -25,6 +25,8 @@ public class GUITable implements Listener {
     int lines;
     int maxSize;
 
+    private Runnable onClosed;
+
     private JavaPlugin instance;
 
     private boolean closable;
@@ -49,6 +51,11 @@ public class GUITable implements Listener {
             initializeItems(airPlaceholder);
         }
 
+    }
+
+
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
     }
 
     public boolean isClosable() {
@@ -81,12 +88,31 @@ public class GUITable implements Listener {
         if(matrix.containsKey(clickedId + 1)) {
             final Player p = (Player) e.getWhoClicked();
             Slot slot = matrix.get(clickedId + 1);
-            SlotRunnable slotRunnable = slot.getOnClick();
-            slotRunnable.setSender(p);
-            slotRunnable.setGUITable(this);
-            slotRunnable.run();
+            if(slot.getSlotListener() == null) {
+                SlotRunnable slotRunnable = slot.getOnClick();
+                slotRunnable.setSender(p);
+                slotRunnable.setGUITable(this);
+                slotRunnable.run();
+            }
+            else
+            {
+                if(e.getClick().isRightClick())
+                {
+                    slot.getSlotListener().onRightClicked(p, this);
+                }
+                else if(e.getClick().isLeftClick())
+                {
+                    slot.getSlotListener().onLeftClicked(p, this);
+                }
+                else if(e.getClick().isShiftClick())
+                {
+                    slot.getSlotListener().onShiftClicked(p, this);
+                }
+            }
         }
     }
+
+
 
     @EventHandler
     public void onInvetoryClosed(final InventoryCloseEvent e)
@@ -101,6 +127,10 @@ public class GUITable implements Listener {
                 }
             }, 20);
             return;
+        }
+        else
+        {
+            if(onClosed != null) onClosed.run();
         }
 
         InventoryCloseEvent.getHandlerList().unregister(this);
@@ -118,6 +148,8 @@ public class GUITable implements Listener {
     public void open(final HumanEntity humanEntity) {
         humanEntity.openInventory(inventory);
     }
+
+
 
 
 

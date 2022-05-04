@@ -31,6 +31,7 @@ public class GUITable implements Listener {
 
     private boolean closable;
 
+    private Material airPlaceholder;
 
 
     public GUITable(String title, int lines, HashMap<Integer, Slot> matrix, JavaPlugin instance, Material airPlaceholder, boolean closable) throws Exception
@@ -46,11 +47,11 @@ public class GUITable implements Listener {
             maxSize = lines * 9;
             this.instance = instance;
             inventory = Bukkit.createInventory(null, lines * 9, title);
-            Bukkit.getPluginManager().registerEvents(this, instance);
             this.matrix = matrix;
+            this.airPlaceholder = airPlaceholder;
             initializeItems(airPlaceholder);
         }
-
+        Bukkit.getPluginManager().registerEvents(this, instance);
     }
 
 
@@ -66,7 +67,7 @@ public class GUITable implements Listener {
         this.closable = closable;
     }
 
-    private void initializeItems(Material airPlaceholder) throws Exception {
+    private void initializeItems(Material airPlaceholder)  {
         for(int i = 0; i < maxSize; i++)
         {
             inventory.setItem(i, new ItemStack(airPlaceholder));
@@ -78,6 +79,12 @@ public class GUITable implements Listener {
             Slot slot = matrix.get(index);
             inventory.setItem(index - 1, slot.getItem());
         }
+
+    }
+
+    public void setMatrix(HashMap<Integer, Slot> matrix) {
+        this.matrix = matrix;
+        initializeItems(airPlaceholder);
     }
 
     @EventHandler
@@ -96,7 +103,11 @@ public class GUITable implements Listener {
             }
             else
             {
-                if(e.getClick().isRightClick())
+                if(e.isShiftClick() | e.getClick().isShiftClick())
+                {
+                    slot.getSlotListener().onShiftClicked(p, this);
+                }
+                else if(e.getClick().isRightClick())
                 {
                     slot.getSlotListener().onRightClicked(p, this);
                 }
@@ -104,10 +115,7 @@ public class GUITable implements Listener {
                 {
                     slot.getSlotListener().onLeftClicked(p, this);
                 }
-                else if(e.getClick().isShiftClick())
-                {
-                    slot.getSlotListener().onShiftClicked(p, this);
-                }
+
             }
         }
     }
@@ -115,7 +123,7 @@ public class GUITable implements Listener {
 
 
     @EventHandler
-    public void onInvetoryClosed(final InventoryCloseEvent e)
+    public void onInventoryClosed(final InventoryCloseEvent e)
     {
         if (e.getInventory() != inventory) return;
         if(!isClosable())
@@ -130,7 +138,17 @@ public class GUITable implements Listener {
         }
         else
         {
-            if(onClosed != null) onClosed.run();
+            Bukkit.getScheduler().runTaskLater(EasyPluginCore.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    if(onClosed != null)
+                    {
+                        onClosed.run();
+                        onClosed = null;
+                    }
+                }
+            }, 20);
+
         }
 
         InventoryCloseEvent.getHandlerList().unregister(this);

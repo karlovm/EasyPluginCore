@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public final class EasyPluginCore extends JavaPlugin {
 
     private static EasyPluginCore instance;
-    private static String version = "0.5";
+    private static String version = "0.6";
     private static ArrayList<String> supportedVersions = new ArrayList<>();
 
     public static String getAPIVersion() {
@@ -28,6 +28,7 @@ public final class EasyPluginCore extends JavaPlugin {
 
         supportedVersions.add("0.4");
         supportedVersions.add("0.5");
+        supportedVersions.add("0.6");
         Bukkit.getConsoleSender().sendMessage(TextManager.toColor("&6EPC API " + this.getDescription().getVersion() +" &7started successfully."));
 
     }

@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Items {
     public static ItemStack createNamedItem(final ItemStack item, final String name, final String... lore) {
@@ -18,6 +19,8 @@ public class Items {
         item.setItemMeta(meta);
         return item;
     }
+
+
 
     public static ItemStack getHead(OfflinePlayer p){
 
